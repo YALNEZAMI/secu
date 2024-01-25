@@ -1,0 +1,17 @@
+{
+  "name": "secu",
+  "version": "1.0.0",
+  "description": "studies project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yaser",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.6"
+  }
+}

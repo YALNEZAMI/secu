@@ -1,0 +1,123 @@
+Dans la suite du TP, on vous incite fortement à utiliser la notation à l’aide des await et async. Cette notation permet également d’utiliser les promesses avec .then si besoin.
+
+Step 5: Petit projet
+Q3:
+A partir de la documentation de l’API du FS, fabriquer une méthode printFileWithSizeEqualNul attaché à la classe Repertoire qui, à partir de la structure de données préalablement créée (Fichier, Répertoire, FsElement), explore ce graphe pour détecter les fichiers donc la taille est zero. On rappelle que la taille d’un répertoire est la somme des tailles de ces éléments. Il faudra préalablement créer la fonction qui crée le graphe d’objet instance de Repertoire et Fichier à partir du chemin d’un répertoire donné en paramètre.
+
+:ticket: Pour lister les fichier d’un répertoire, vous pouvez utiliser la fonction
+
+fs.readdir(path)
+:ticket: Pour savoir si un élement contenu dans un répertoire est un répertoire ou un fichier, la fonction fs.stat() vue précédemment retourne un objet sur lequel on a accès à l’API suivante.
+
+stats.isDirectory()
+:ticket: De même, pour connaître la taille d’un fichier à l’aide de l’api fs; on utilisera l’attribut size de l’objet retourné par fs.stat().
+
+stats.size
+:ticket: Enfin, n’oubliez pas vos cours sur la récursivité afin de créer un graphe complet.
+
+:ticket: Automatisation de la phase de compilation. Recompiler à chaque fois que l’on souhaite tester l’exécution, c’est fastidieux. Il est classique d’utiliser des mécanismes qui vont surveiller l’état du système de fichier et déclencher la compilation pour vous. Pour ce faire, à la racine du projet, lancer la commande:
+
+tsc --watch
+Cela lance un processus qui surveille tous vos fichiers typescript et relance la compilation quand un fichier ts est modifié.
+
+Q4:
+Etendez votre structure de données pour ajouter la notion de permission et vérifier de manière récursive qu’aucun enfant n’a des permissions moins restrictives qu’un de ses parents. De nouveau, on modifiera la fonction qui permet de créer le graphe d’objets Repertoire et Fichier à partir d’un chemin donné sous forme de chaine de caractères et on ajoutera une méthode à la classe répertoire pour la partie vérification de droits.
+
+Step 6: Comprendre certains aspects du système de type
+Par défaut, en TypeScript nous avons pas mal de flexibilité sur la configuration du typechecker (configuration au niveau du fichier tsconfig.json). En effet, différents utilisateurs viennent à TypeScript en recherchant différentes choses dans un vérificateur de type. Certains recherchent une expérience plus souple qui peut aider à valider seulement certaines parties de leur programme, tout en disposant d’un outil décent. C’est l’expérience par défaut avec TypeScript (pas celle configuré dans notre projet), où les types sont optionnels, l’inférence prend les types les plus indulgents, et il n’y a pas de vérification pour les valeurs potentiellement nulles ou indéfinies. Ces valeurs par défaut sont mises en place pour ne pas vous gêner. Si vous migrez du JavaScript existant, cela peut être une première étape souhaitable.
+
+En revanche, beaucoup d’utilisateurs préfèrent que TypeScript valide le plus possible dès le départ, et c’est pourquoi le langage fournit également des paramètres de demande de rigueur forte, c’est notre cas dans ce projet. Utiliser une demande de rigueur plus forte peut nécessiter un peu de travail supplémentaire, mais en général cela se paie sur le long terme, et permet des vérifications plus approfondies et des outils plus précis. Lorsque cela est possible, une nouvelle base de code devrait toujours activer ces vérifications. Prenons l’exemple de deux d’entres elles.
+
+noImplicitAny
+Rappelons qu’à certains endroits, TypeScript n’essaie pas de déduire les types pour nous et se rabat sur le type le plus indulgent : any. Ce n’est pas la pire chose qui puisse arriver - après tout, se rabattre sur any est juste l’expérience JavaScript ordinaire de toute façon.
+Any est le (void*) de C++, cela desactive toute vérification de type. Un objet de type any peut être affecté à n’importe quelle variable quelque soit sont type, on peut lui appeler n’importe quelle méthode …
+
+Cependant, l’utilisation de any va souvent à l’encontre de la raison d’être de TypeScript. Plus votre programme est typé, plus vous obtiendrez de validation et d’outils, ce qui signifie que vous rencontrerez moins de bugs lorsque vous coderez. Activer le drapeau noImplicitAny dans le fichier tsconfig.json provoquera une erreur sur toutes les variables dont le type est implicitement déduit comme étant any.
+
+Contrôles stricts de nullité
+
+Par défaut, les valeurs telles que null et undefined sont assignables à n’importe quel autre type. Cela peut faciliter l’écriture de certains codes, mais oublier de gérer les valeurs null et undefined est la cause d’innombrables bogues dans le monde - certains considèrent que c’est l’erreur à un milliard de dollars ! L’option strictNullChecks rend la gestion de null et undefined plus explicite et nous évite de nous soucier de savoir si nous avons oublié de gérer null et undefined. Mettre cette valeur à true empêchera par exemple aussi de laisser une variable déclarée comme une chaîne de caractère au type non défini. D’un point de vue typage, null et undefined ne deviennent plus des valeurs acceptables pour les types existants. Pour autoriser une valeur undefined, il faudra alors dire explicitement qu’une variable peut être une chaîne de caractère par exemple ou undefined en utilisant les union de type.
+
+name: string |undefined 
+Nous pourrons aussi utiliser la notion de propriété optionnelle si c’est un attribut d’une classe, d’une interface, un paramètre d’une fonction à l’aide de la notation suivante:
+
+name?: string 
+Q5:
+Dans notre classe Fichier, ajoutez un attribut est_lie_a qui en tant que référence optionnel vers un autre objet.
+
+Je vous donne la syntaxe dans l’extrait de code ci-dessous
+
+est_lie_a?: FsElement // FsElement est le nom de votre interface créée à la question 1
+Créer ensuite une méthode affiche_est_lie_a qui affiche dans la console le nom de l’élement auquel est lié un fichier. Pour cela nous allons tester plusieurs syntaxe
+
+affiche_est_lie_a():void{
+    console.log('lié à :', this.est_lie_a.nom)
+} 
+affiche_est_lie_a():void{
+    if (this.est_lie_a !== undefined){
+        console.log('lié à :', this.est_lie_a.nom)    
+    }
+} 
+affiche_est_lie_a():void{
+        console.log('lié à :', this.est_lie_a?.nom)    
+} 
+C
+Après un échange avec votre intervant de TP, la lecture des références suivantes, présenter dans le compte rendu de TP avec vos mots les avantages et/ou les inconvénients de chacun des codes ci-dessus. Certains codes peuvent provoquer des erreurs à la compilation ou à l’exécution. Vous discuterez le pourquoi de ces erreurs.
+
+[6] https://askjavascript.com/exclamation-mark-or-bang-operator-in-typescript-when-dereferencing/
+
+[7] https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#optional-properties
+[8] https://www.typescriptlang.org/docs/handbook/2/objects.html#optional-properties
+
+Step 7: Placement de ce projet sur git
+Maintenant que le squelette est en place, nous allons placer ce code sur git.
+
+Créer un blank project sur le gitlab de l’istic. https://gitlab.istic.univ-rennes1.fr/
+
+:warning: Désélectionnez Initialize repository with a README afin de garder un repo complètement vide.
+
+
+# Configurer git sur votre machine, 
+# ⚠️ à remplacer avec votre nom et votre mail
+git config --global user.name "Barais Olivier" 
+git config --global user.email "olivier.barais@univ-rennes1.fr"
+
+# Initialiser le repo local
+git init --initial-branch=main
+
+# Initialiser le repo distant sur lequel vous enverrez votre code
+# ⚠️ mettre l'url en fonction de votre repo créé sur gitlab
+git remote add origin git@gitlab.istic.univ-rennes1.fr:obarais/tp1secuwebl3.git
+
+# Création d'un fichier Readme.md pour placer votre rapport
+touch Readme.md #Pour votre future rapport
+
+# Ajout des fichiers à suivre au sein de l'historique
+git add Readme.md src/** package.json tsconfig.json
+
+# Commit des modifications
+git commit -m 'Initial commit'
+
+# Premier push vers le repo distant en fixant que la branche local courante est à placé vers la branch main à distance
+git push --set-upstream origin main
+
+# à partir de là, à la fin de chaque question, vous pouvez faire
+git commit . 
+# afin de créer un nouveau snapshot de l'historique de vos fichiers
+# et
+git push
+# pour envoyer l'historique vers gitlab
+# ⚠️ si vous créez de nouveaux fichiers, il faudra les ajouter à l'index en utilisant la commande git add. 
+# N'oubliez pas de regarder par moment l'état de votre repo en faisant un git status. 
+# 👨🏽‍🏫:La qualité de l'utilisation de git sera évalué dans la note globale des TPs
+Step 8: Et les tests unitaires dans tout cela?
+Q6 :
+On va créer un test qui vérifie le comportement du getter de taille pour la classe Réperoire.
+
+npm install --save-dev jest @types/jest @jest/globals ts-jest
+npx ts-jest config:init
+Cela crée le fichier de configuration pour le driver de tests (ici on utilise jest).Le fichier généré au départ ressemble à :
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+module.exports = {
+  preset: 'ts-jest',
